@@ -22,20 +22,60 @@ The app's commands are accessed through the cli.py module.
 
 The commands follow the syntax python cli.py command objects
 The app has the following functions
+
+### Adding habits
 ```
-python cli.py add [habitname] periodicity
+python cli.py add habitname periodicity
+```
+
+### Deleting habits
+```
 python cli.py delete habitname
-python cli.py check habitname
-python cli.py history habitname
-python cli.py list periodicity
-python cli.py listall
-python cli.py timeline
-python cli.py longest-streak
-python cli.py list-streak
-python cli.py consistency habitname
-python cli.py consistency-all
 ```
-tests are conducted with pytest using the command 
+
+### Checking-in
+```
+python cli.py check habitname
+```
+
+### Viewing history
+```
+python cli.py history habitname
+```
+
+### List habit's periodicities
+```
+python cli.py list periodicity
+```
+
+### List all habits
+```
+python cli.py list
+```
+
+### List the last entries into timeline
+```
+python cli.py history [habitname]
+```
+
+### Show longest streak
+```
+python cli.py longest-streak [habitname]
+```
+
+### Show current streak
+```
+python cli.py current-streak [habitname]
+```
+
+### Show consistency
+```
+python cli.py consistency [habitname]
+```
+- NOTE: Values in square brackets [] are optional
+
+## Testing
+- tests are conducted with pytest by navigating into the folder and using the command 
 ```
   pytest tests.py
 ```

@@ -31,8 +31,8 @@ def check(name: str):
     print(habit.checkin(date.today()))
 
 
-@app.command("timeline")
-def show_timeline(habit: Optional[str] = typer.Argument(default=None)):
+@app.command("history")
+def show_history(habit: Optional[str] = typer.Argument(default=None)):
     """Shows a table of the last 10 entries into the timeline."""
     table = Table(title="Timeline")
     table.add_column("name", justify="right", style="blue", no_wrap=True)
@@ -41,6 +41,22 @@ def show_timeline(habit: Optional[str] = typer.Argument(default=None)):
     timeline = get_timeline(habit) if habit is not None else history()
     for i in timeline:
         table.add_row(*i)
+    console.print(table)
+
+
+@app.command("list")
+def list_all(periodicity: Optional[str] = typer.Argument(default=None)):
+    """Shows a table of all habits."""
+    table = Table(title="Weekly Habits")
+    table.add_column("name", justify="center", style="cyan")
+    if periodicity == None or "all":
+        for i in get_all_habits():
+            table.add_row(i)
+    elif periodicity == "weekly" or "daily":
+        for i in get_with_period(periodicity):
+            table.add_row(i)
+    else:
+        console.print("please specify periodicity")
     console.print(table)
 
 
@@ -66,24 +82,60 @@ def list_daily():
 
 
 @app.command()
-def longest_streak(name):
+def longest_streak(name: Optional[str] = typer.Argument(default=None)):
     """Shows the longest streak of all habits it's starting data and it's end date."""
-    if name == "all":
+    if name == None:
         print(get_lstreak_all())
     else:
         print(get_lstreak(name))
 
 
 @app.command()
-def consistency():
+def current_streak(name: str):
+    """Shows the current streak of all habits it's starting data and it's end date."""
+    print(get_cstreak(name))
+
+
+@app.command()
+def show_consistency(habit: Optional[str] = typer.Argument(default=None)):
     """Shows a table of all habits and their consistency."""
     habits = get_all_habits()
-    consistency = list(map(lambda x: str(missed_ratio(x)), habits))
+    consistencies = (
+        list(map(lambda x: str(consistency(x)), habits))
+        if habit == None
+        else consistency(habit)
+    )
     table = Table(title="Consistency")
     table.add_column("habit", justify="left")
     table.add_column("%complete", justify="center")
-    for i in range(len(habits)):
-        table.add_row(habits[i], consistency[i])
+    if habit == None:
+        for i in range(len(habits)):
+            table.add_row(habits[i], consistencies[i])
+    else:
+        table.add_row(habit, str(consistencies))
+    console.print(table)
+
+
+@app.command("testdata")
+def show_test_data():
+    db = make_db("tests.db")
+    cur = db.cursor()
+    res = cur.execute(
+        "SELECT name, date_checked, ischecked FROM Timeline ORDER BY date_checked desc"
+    ).fetchall()
+    names = [res[i][0] for i in range(len(res))]
+    dates = [date.strftime(res[i][1], "%Y-%m-%d") for i in range(len(res))]
+    completed = list(
+        map((lambda x: "yes" if x == 1 else "No"), [res[i][2] for i in range(len(res))])
+    )
+    timeline = [res[i] for i in range(len(res))]
+    lists = [(names[i], dates[i], completed[i]) for i in range(len(res))]
+    table = Table(title="Timeline")
+    table.add_column("name", justify="right", style="blue", no_wrap=True)
+    table.add_column("date", style="green")
+    table.add_column("status", style="yellow")
+    for i in lists:
+        table.add_row(*i)
     console.print(table)
 
 

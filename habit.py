@@ -1,8 +1,5 @@
 from db import *
-
-# db = make_db("dsposable1.db")
-# cur = db.cursor()
-# make_tables(db)
+from datetime import date, timedelta
 
 
 class Habit:
@@ -148,12 +145,10 @@ class Habit:
             return f"Checked {self.name} for the day"
         elif self.periodicity == "weekly":
             if last_date == None:
-                # print(last_check)
                 self.update_streak(date_checked)
             elif self.due_week(last_date) < self.due_week(date_checked):
                 deadline = self.due_week(date_checked)
                 prev_due = self.due_week(last_date)
-                # print(prev_due, deadline)
                 if deadline - prev_due <= timedelta(weeks=2):
                     self.update_streak(date_checked)
                 else:
@@ -180,25 +175,3 @@ class Habit:
             "SELECT longest_streak FROM Streak WHERE name = ?", (self.name,)
         ).fetchone()
         return res[0]
-
-
-# def get(self):
-#     """"""
-#     habit = cur.execute(
-#         "SELECT name FROM Habits WHERE name = ?", (self.name,)
-#     ).fetchone()
-#     exists = habit is not None
-#     return exists
-
-# def get_last_check(self):
-#     """"""
-#     db = self.db
-#     cur = db.cursor()
-#     res = cur.execute(
-#         "SELECT date_checked, ischecked FROM Timeline WHERE name = ? ORDER BY date_checked DESC",
-#         (self.name,),
-#     ).fetchone()
-#     if res is not None:
-#         return res
-#     else:
-#         return (None, None)

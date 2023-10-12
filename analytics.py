@@ -31,7 +31,6 @@ def get_with_period(periodicity):
         (periodicity,),
     ).fetchall()
     habit_list = [x[0] for x in res]
-    print(habit_list)
     return habit_list
 
 
@@ -117,7 +116,7 @@ def get_lstreak_all():
     return f"The longest streak is the habit {res[1]} {res[0]}{unit} from {res[2]} to {res[3]}"
 
 
-def missed_ratio(name: str):
+def consistency(name: str):
     """Gives the ratio of completed dates to missed dates"""
     habit = get_habit(name)
     missed = cur.execute(

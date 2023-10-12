@@ -118,23 +118,11 @@ def show_consistency(habit: Optional[str] = typer.Argument(default=None)):
 
 @app.command("testdata")
 def show_test_data():
-    db = make_db("tests.db")
-    cur = db.cursor()
-    res = cur.execute(
-        "SELECT name, date_checked, ischecked FROM Timeline ORDER BY date_checked desc"
-    ).fetchall()
-    names = [res[i][0] for i in range(len(res))]
-    dates = [date.strftime(res[i][1], "%Y-%m-%d") for i in range(len(res))]
-    completed = list(
-        map((lambda x: "yes" if x == 1 else "No"), [res[i][2] for i in range(len(res))])
-    )
-    timeline = [res[i] for i in range(len(res))]
-    lists = [(names[i], dates[i], completed[i]) for i in range(len(res))]
     table = Table(title="Timeline")
     table.add_column("name", justify="right", style="blue", no_wrap=True)
     table.add_column("date", style="green")
     table.add_column("status", style="yellow")
-    for i in lists:
+    for i in history(make_db("tests.db")):
         table.add_row(*i)
     console.print(table)
 

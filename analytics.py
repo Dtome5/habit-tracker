@@ -5,8 +5,9 @@ cur = db.cursor()
 make_tables(db)
 
 
-def get_habit(name):
+def get_habit(name, db=make_db("habits.db")):
     """Retreives a habit from the databaase if it exists and returns a class"""
+    cur = db.cursor()
     res = cur.execute(
         "SELECT name, periodicity FROM Habits WHERE name = ?", (name,)
     ).fetchone()
@@ -17,15 +18,17 @@ def get_habit(name):
         return f"{name} does not exist"
 
 
-def get_all_habits():
+def get_all_habits(db=make_db("habits.db")):
     """Returns a list of all habits"""
+    cur = db.cursor()
     res = cur.execute("SELECT name FROM Habits").fetchall()
     habit_list = [x[0] for x in res]
     return habit_list
 
 
-def get_with_period(periodicity):
+def get_with_period(periodicity, db=make_db("habits.db")):
     """Returns a list of all habits with the specified periodicity"""
+    cur = db.cursor()
     res = cur.execute(
         "SELECT name, periodicity FROM Habits WHERE periodicity = ? ",
         (periodicity,),
@@ -34,8 +37,9 @@ def get_with_period(periodicity):
     return habit_list
 
 
-def get_timeline(name: str):
+def get_timeline(name: str, db=make_db("habits.db")):
     """Returns a list of the last ten entries into the timeline of the habit"""
+    cur = db.cursor()
     res = cur.execute(
         "SELECT name, date_checked, ischecked FROM Timeline WHERE name = ? LIMIT 10",
         (name,),
@@ -50,8 +54,9 @@ def get_timeline(name: str):
     return lists
 
 
-def history():
+def history(db=make_db("habits.db")):
     """Returns a list of the last ten entries into the timeline"""
+    cur = db.cursor()
     res = cur.execute(
         "SELECT name, date_checked, ischecked FROM Timeline ORDER BY date_checked desc LIMIT 10"
     ).fetchall()
@@ -65,8 +70,9 @@ def history():
     return lists
 
 
-def get_lstreak(name):
+def get_lstreak(name, db=make_db("habits.db")):
     """Returns the longest streak of a habit"""
+    cur = db.cursor()
     res = cur.execute(
         "SELECT longest_streak, longest_start, longest_end FROM Streak WHERE name = ?",
         (name,),
@@ -82,8 +88,9 @@ def get_lstreak(name):
         return f"there is no streak for {habit.name}"
 
 
-def get_cstreak(name):
+def get_cstreak(name, db=make_db("habits.db")):
     """Returns the current streak of a habit"""
+    cur = db.cursor()
     res = cur.execute(
         "SELECT current_streak, current_start, current_end FROM Streak WHERE name = ?",
         (name,),
@@ -99,8 +106,9 @@ def get_cstreak(name):
         return f"there is no streak for {habit.name}"
 
 
-def get_lstreak_all():
+def get_lstreak_all(db=make_db("habits.db")):
     """Gives a list of the longest streak on all habits"""
+    cur = db.cursor()
     res = cur.execute(
         "SELECT longest_streak,name,longest_start,longest_end FROM Streak ORDER BY longest_streak DESC"
     ).fetchone()
@@ -116,7 +124,8 @@ def get_lstreak_all():
     return f"The longest streak is the habit {res[1]} {res[0]}{unit} from {res[2]} to {res[3]}"
 
 
-def consistency(name: str):
+def consistency(name: str, db=make_db("habits.db")):
+    cur = db.cursor()
     """Gives the ratio of completed dates to missed dates"""
     habit = get_habit(name)
     missed = cur.execute(

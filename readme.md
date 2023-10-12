@@ -35,4 +35,9 @@ python cli.py list-streak
 python cli.py consistency habitname
 python cli.py consistency-all
 ```
-
+tests are conducted with pytest using the command 
+```
+  pytest tests.py
+```
+To view the four weeks of habit testing data use the command
+```python cli.py testdata```

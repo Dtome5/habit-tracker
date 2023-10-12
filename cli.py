@@ -2,6 +2,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 from analytics import *
+from typing import Optional
 
 app = typer.Typer()
 console = Console()
@@ -30,14 +31,15 @@ def check(name: str):
     print(habit.checkin(date.today()))
 
 
-@app.command("listall")
-def show_timeline():
+@app.command("timeline")
+def show_timeline(habit: Optional[str] = typer.Argument(default=None)):
     """Shows a table of the last 10 entries into the timeline."""
     table = Table(title="Timeline")
     table.add_column("name", justify="right", style="blue", no_wrap=True)
     table.add_column("date", style="green")
     table.add_column("status", style="yellow")
-    for i in timeline():
+    timeline = get_timeline(habit) if habit is not None else history()
+    for i in timeline:
         table.add_row(*i)
     console.print(table)
 

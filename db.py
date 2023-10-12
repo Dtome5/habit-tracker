@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import *
+from datetime import date, timedelta
 
 
 def make_db(name="database.db"):
@@ -27,9 +27,6 @@ def make_tables(db):
     )
     cur.execute(
         "CREATE TABLE IF NOT EXISTS Timeline (name text, date_checked date, ischecked bool)"
-    )
-    cur.execute(
-        "CREATE TABLE IF NOT EXISTS Week_Timeline (name text, date_checked date, start_date date, stop_date date, ischecked bool)"
     )
     db.commit()
 
@@ -101,7 +98,7 @@ def habit_exists(db, name: str):
     Args:
     db: the database the habit is stored in
     name: the habit's name
-    """"
+    """
     cur = db.cursor()
     res = cur.execute("SELECT name FROM Habits WHERE name = ?", (name,)).fetchone()
     if res == None:
@@ -117,12 +114,6 @@ def get_last_check(db, name: str):
         (name,),
     ).fetchone()
     return last_check
-
-
-def get_last_date(db, name: str):
-    last_check = get_last_check(db, name)
-    last_date = last_check[0]
-    return last_date
 
 
 def update_streak(
